@@ -1,0 +1,2 @@
+generate_childs.o generate_childs.o:  \
+ /home/joao/manage_stock/src/generate_childs.cpp

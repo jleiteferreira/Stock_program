@@ -1,0 +1,104 @@
+#!/usr/bin/perl -w
+#
+
+use Crypt::RandPasswd;
+
+
+#program version
+my $VERSION="0.1";
+use Time::HiRes qw( usleep  );
+#For CVS , use following line
+#my $VERSION=sprintf("%d.%02d", q$Revision: 370592 $ =~ /(\d+)\.(\d+)/);
+
+
+while (1==1) {
+		@list = `ls -1 /home/joao/memory/`;
+		$list = `ps -ef > listtemp`;
+
+		# Verify that top guy is alive
+		if (-e "/home/joao/location.txt") {
+		$top = `cat /home/joao/location.txt`;
+		$top = sprintf("%d",$top);
+		$topprogram = `cat listtemp  |  awk '{print \$8 " " \$9}' | grep -w $top | grep memory`;
+			if ($topprogram !~ "memory" ) {
+				print " removing top program, does not exist $top \n";
+				$removed = `echo $top > /home/joao/killed.txt`;
+				usleep(100000);	
+			}
+		}
+
+		foreach $garbage (@list) {
+			usleep(1000);
+			chomp $garbage;
+			$result = `cat listtemp | grep memory | grep $garbage | grep memory`;
+			if ( $result !~ "/home/joao/memory") {
+				#double check 
+				$result = `ps -ef | grep memory | grep $garbage | grep memory`;
+				if ( $result !~ "/home/joao/memory") {
+					if (-e "/home/joao/memory/$garbage") {
+					$gasd = `rm /home/joao/memory/$garbage`;
+					#print "Removed $garbage \n";
+					}
+				}
+			}
+			if (-e "/home/joao/tokill.txt") {
+				#print "\n Start Removing process \n";
+				$tokill = `cat /home/joao/tokill.txt`;
+				$removed = `rm /home/joao/tokill.txt`;
+				$removed = `echo $tokill > /home/joao/killed.txt`;
+				$tokill = sprintf("%d",$tokill);
+				usleep(100000);
+				$program = `cat listtemp  |  awk '{print \$8 " " \$9}' | grep -w $tokill | grep memory`;
+				#print $program;
+				if ($program =~ "memory" ) {
+				($programa_to_remove, $test) = split / /,$program;
+				print " programa a remover e $programa_to_remove vindo de $program \n";
+				if (-e "$programa_to_remove") {
+					$result = `rm $programa_to_remove `;
+				}
+				$programa_to_remove =~ s/\/home\/joao\/memory\///;
+				$result2 = `killall $programa_to_remove `;
+				#print " removi $result $programa_to_remove \n";
+				}
+				
+				#Do another check on the top guy
+				if (-e "/home/joao/location.txt") {
+				$top = `cat /home/joao/location.txt`;
+				$top = sprintf("%d",$top);
+				$topprogram = `cat listtemp  |  awk '{print \$8 " " \$9}' | grep -w $top | grep memory`;
+					if ($topprogram !~ "memory" ) {
+					#double check
+						$topprogram = `ps -ef |  awk '{print \$8 " " \$9}' | grep -w $top | grep memory`;
+						if ($topprogram !~ "memory" ) {
+							print " removing top program, does not exist $top \n";
+							$removed = `echo $top > /home/joao/killed.txt`;
+							usleep(100000);	
+						}
+					}
+				}
+			}
+		}
+}
+__END__
+
+=head1 NAME
+
+cpu_memory_monitoring - short description of your program
+
+=head1 SYNOPSIS
+
+ how to use your program
+
+=head1 DESCRIPTION
+
+ long description of your program
+
+=head1 SEE ALSO
+
+ need to know things before somebody uses your program
+
+=head1 AUTHOR
+
+ joao ferreira
+
+=cut

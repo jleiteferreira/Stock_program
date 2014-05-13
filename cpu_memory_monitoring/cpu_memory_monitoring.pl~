@@ -1,0 +1,309 @@
+#!/usr/bin/perl -w
+#
+use strict;
+use warnings;
+use Crypt::RandPasswd;
+use Date::DayOfWeek;
+use Time::HiRes qw( usleep  );
+
+#program version
+my $VERSION="0.2";
+
+#For CVS , use following line
+#my $VERSION=sprintf("%d.%02d", q$Revision: 370592 $ =~ /(\d+)\.(\d+)/);
+
+sub do_something {
+  my $text=shift;
+  print "$text\n";
+}
+
+sub find_best_program {
+
+}
+
+&do_something("Hello World");
+
+   use Sys::Statistics::Linux;
+   use Data::Dumper;
+   use Proc::ProcessTable;
+
+    my $lxs = Sys::Statistics::Linux->new(
+        sysinfo   => 0,
+        cpustats  => 1,
+        procstats => 0,
+        memstats  => 1,
+        pgswstats => 0,
+        netstats  => 0,
+        sockstats => 0,
+        diskstats => 0,
+        diskusage => 0,
+        loadavg   => 0,
+        filestats => 0,
+        processes => 0,
+    );
+
+    sleep 1;
+    my $stat = $lxs->get;
+    print " \n";
+
+
+ my $cpu  = $stat->cpustats->{cpu};
+ my $memory_percentage = $stat->memstats->{memusedper};
+my $command = " ";
+my $home = " ";
+my $programa = " ";
+my $program_entry = " ";
+my $joao = " ";
+my $garbage = " ";
+my $available_used = -1;
+my $hardrive;
+my $tokill;
+my $tokill2;
+my $hardrive_command;
+my $state=1;
+my @args=" ";
+my @list;
+my @program_list;
+my @program_list_pid;
+my $rate=100000;
+my $rate_sec;
+my $FORMAT = "%-6s %s %s %s\n";
+my $first_cicle =1;
+
+my $todayyear;
+my $todaymonth;
+my $todayday;
+my $dow;
+my $result;
+my $number_of_active_programs;
+my $wc;
+
+
+while (1==1) {
+	if ($number_of_active_programs <= 100 ) { sleep 10; }
+	if ($number_of_active_programs <= 2900 ) {  }
+	if ($number_of_active_programs > 10000 ) { sleep 1; }
+	#print "CPU: $cpu->{total}%\n";
+	#print "Memory: ${memory_percentage}%\n";
+	my $stat = $lxs->get;
+	my $t = new Proc::ProcessTable;
+	my $cpu  = $stat->cpustats->{cpu};
+	my $memory_percentage = $stat->memstats->{memusedper};
+	$hardrive_command = `df -h | grep memory`;
+	($garbage ,$garbage, $garbage , $garbage , $hardrive) = split / +|	/, $hardrive_command;
+	#print "  $hardrive_command and $hardrive \n";
+	$hardrive =~ s/%//g;
+	$hardrive = sprintf("%.f",$hardrive);
+	$number_of_active_programs = `cat /home/joao/number_of_active.txt`;
+	print "Active programs: $number_of_active_programs \n";
+
+	
+	$rate_sec=($rate + 2000)/1000000;
+	if ($cpu->{total} < 70 && $memory_percentage < 99 && $hardrive < 90) {
+	# CPU and Memory in acceptable ranges, create and launch new program
+		$state =1 ;
+		print "Active programs:$number_of_active_programs CPU:$cpu->{total} MEMORY:$memory_percentage  HARDRIVE:$hardrive \n ";
+	} else {
+		print "Active programs:$number_of_active_programs CPU:$cpu->{total} MEMORY:$memory_percentage  HARDRIVE:$hardrive \n ";
+		$state =0 ;
+		sleep 1;
+	}
+
+	
+	open FILE, "/home/joao/location.txt";
+	# read the record, and chomp off the newline
+	chomp(my $best_program = <FILE>);
+	close FILE;
+	open FILE, "/home/joao/available.txt";
+	# read the record, and chomp off the newline
+	chomp(my $available = <FILE>);
+	close FILE;
+	if (rand() > 0.9) {
+		foreach my $p ( @{$t->table}) {
+			if ( $p->cmndline =~ "/home/joao/memory") {
+				my $commandline = $p->cmndline ;
+				chomp($commandline);
+				($command,$program_entry) = split / /, $commandline ;
+				$program_entry = sprintf("%d", $program_entry);	
+				($garbage,$home,$joao,$garbage,$programa) = split /\//, $command;
+				$program_list[$program_entry]= $programa;
+				$program_list_pid[$program_entry]= $p->pid;
+				if ( $p->pctmem > 10 || $p->pctcpu > 10) {
+					@args = ("kill", $p->pid);
+						system(@args) == 0
+						or print "system @args failed: $?";
+				}
+			}
+		}
+	}
+	#debug line
+	if ( !(defined $program_list[$best_program]) ) {
+		print ("this is a problem\ we can't recreate programs if they do not exist we need to kill it, force search");
+		if (rand() > 0.99) {$garbage = `echo $best_program > /home/joao/killed.txt`;}
+	}
+
+	#print " $available_used != $available && $state == 1 && $program_list[$best_program] \n ";
+	if ( $available_used != $available && $state == 1 && $program_list[$best_program] && $number_of_active_programs < 5000  ) {
+		my $new_word = Crypt::RandPasswd->letters( 7, 7 );
+		my $password = Crypt::RandPasswd->letters( 7, 7 );
+		print ( "Novo programa creado\n");
+		#print ( " o novo vai ser $new_word na posicato $available best $best_program nome  $program_list[$best_program] \n ");
+		my $success = 0;
+		my $failure = 0;
+		while ( $success == 0) {
+			system("nohup /home/joao/make_child/debug/src/make_child $new_word $program_list[$best_program] > /dev/null &");
+			select(undef, undef, undef, 0.25);
+			my $killed = system("killall make_child");
+			print ("Killed = $killed\n");
+			#make another check for the id
+			if ( -e "/home/joao/memory/$new_word" && $killed != 0 ) {
+			my $available =3;
+			my $output_program = system("/home/joao/memory/$new_word $available test > /home/joao/memory/tmp & sleep 1 && kill $! 2>/dev/null");
+			open FILE, "/home/joao/memory/tmp";
+			# read the record, and chomp off the newline
+			chomp(my $output = <FILE>);
+			close FILE;
+				if ( $output =~ "MY ID IS $available" ) {
+					$success = 1;
+				}
+			} elsif ( rand() > 0.9 ) { 
+				$success = 1;
+				$failure = 1;
+			}
+		}
+		if ( $failure == 0 ) {
+			system("chmod 770 /home/joao/memory/$new_word* ");
+			system("nohup /home/joao/memory/$new_word $available $password > /dev/null &");
+			$available_used = $available;
+			my $file_read = '/home/joao/password';
+			my $file_write= '/home/joao/password';
+			open (file_read, "/home/joao/password") or die "Could not open file password: $!";
+			open (file_write, ">/home/joao/password2") or die "Could not open file password2: $!";
+			my $found = 0;
+			while( my $line = <file_read>)  {   
+				#print $line;    
+				my @code = split(' ', $line);
+				#print $code[0];
+				if ( $code[0] == $available ) {
+					print file_write "$available $password\n";
+					$found = 1;
+				} else {
+					print file_write "$line";
+				
+				}
+			}
+			if ($found == 0 ) {
+				print file_write "$available $password\n";
+			}
+			close file_read;
+			close file_write;
+			system("chmod 700 /home/joao/password");
+			system("cp /home/joao/password2 /home/joao/password");
+		}
+	}
+	
+
+        # KILL BAD BEHAVED PROGRAMS
+	my $done = 0;
+	while ( $done == 0 ) {
+		if (-e "/home/joao/tokill.txt" && $number_of_active_programs > 100) {
+			$tokill2 = `tail -1 /home/joao/tokill.txt`;
+			print "got this guy to kill $tokill2";
+			$garbage = `sed '\$d' < /home/joao/tokill.txt > /home/joao/tokill2.txt && mv /home/joao/tokill2.txt /home/joao/tokill.txt`;
+			if ( !($tokill2 eq '') ) {
+				$tokill2 = sprintf("%d",$tokill2);
+				print " $tokill2 to be killerd \n";
+				if ($tokill2 && $program_list[$tokill2]) {
+					print "kill -9 $program_list_pid[$tokill2] \n";
+					system("kill -9 $program_list_pid[$tokill2]");
+					if (-e "/home/joao/memory/$program_list[$tokill2]") { $garbage = `rm /home/joao/memory/$program_list[$tokill2]`; }
+					$garbage = `echo $tokill2 > /home/joao/killed.txt`;
+					undef $program_list_pid[$tokill2];
+					undef $program_list[$tokill2];
+					undef $tokill2;
+					print "Killed normally\n";
+				} elsif ( rand() > 0.50 && $tokill2 ) {
+					$garbage = `echo $tokill2 > /home/joao/killed.txt`;
+					print "dirty clean\n";
+				}
+			} else {
+				print "nothing to clean\n";
+				$done = 1;
+			}
+		}
+	}
+
+        ##############
+        # DO A CLEAN UP
+        # This is important because of hard disk space
+        ###############
+	if (rand() > 0.999 || $first_cicle == 1  ) {
+		print " \n Entering clean up \n";
+		($garbage,$garbage,$garbage,$todayday,$todaymonth,$todayyear,$garbage, $garbage,$garbage)=localtime(time);
+		$todayyear = sprintf("%4d",$todayyear+1900);
+		$todaymonth = sprintf("%2d",$todaymonth+1);
+		$todayday = sprintf("%2d",$todayday);
+		$dow = dayofweek( $todayday, $todaymonth, $todayyear ); # dd, mm, yyyy
+		if (  $state == 0  ) {
+			$garbage = `echo " " > /home/joao/cpu_memory_monitoring/nohup.out`;
+			print " doing clean up \n ";
+			
+			@list = `ls /home/joao/memory/ | sort`;
+			foreach $garbage (@list) {
+				$home = 0;
+				chomp $garbage;
+				$wc = `ps -ef | grep memory | grep $garbage | wc `;
+				#print "$wc\n";
+				if ( $wc =~ " 2 " ) { 
+					$home =1;
+				} else {
+					foreach my $p ( @{$t->table}) {
+						#print "$p->cmndline and $garbage \n";
+						
+						if ( $p->cmndline =~ "/home/joao/memory" && $p->cmndline =~ "$garbage") {
+						$home =1;
+						last;
+						} 
+					}
+				}
+				if ($home == 0 && $garbage != "password" ) {
+					 if (-e "/home/joao/memory/$garbage") {
+					$joao = `rm /home/joao/memory/$garbage`;
+					}
+				}
+			}
+		}
+		$garbage = `cp /home/joao/memory/$program_list[$best_program] /home/joao/best/`;
+	}
+$first_cicle=0;
+
+
+undef $tokill;
+
+}
+
+
+print "That's all folks for version $VERSION \n";
+__END__
+
+=head1 NAME
+
+cpu_memory_monitoring - short description of your program
+
+=head1 SYNOPSIS
+
+ how to use your program
+
+=head1 DESCRIPTION
+
+ long description of your program
+
+=head1 SEE ALSO
+
+ need to know things before somebody uses your program
+
+=head1 AUTHOR
+
+ joao ferreira
+
+=cut
