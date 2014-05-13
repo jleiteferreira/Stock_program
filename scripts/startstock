@@ -1,0 +1,29 @@
+#!/bin/bash
+# just for noting
+#mount -t tmpfs none /home/joao/memory -o size=2000m
+# this is done in /etc/rc.local
+/home/joao/scripts/stopstock &
+set -x
+sleep 2
+/home/joao/insert_data_sm/debug/src/insert_data_sm > /dev/null & #this guy imports the information
+sleep 2
+perl /home/joao/StockProject2/currency_lookup_forC.perl > /dev/null &
+sleep 2
+#nohup /home/joao/manage_stock/debug/src/manage_stock 
+sleep 30
+cp /home/joao/best/* /home/joao/memory/
+DIR="/home/joao/memory"
+F=1
+set +e
+for i in $DIR/*[^~,] ; do
+		echo $i
+	if [ -x $i ];  then
+		#$i $F $F > /dev/null 2>&1 &
+		$i $F $F  &
+   	        echo "$F $F" >> /home/joao/password
+		let F=F+1
+	fi
+done
+
+sleep 20
+#perl /home/joao/cpu_memory_monitoring/cpu_memory_monitoring.pl > /dev/null &

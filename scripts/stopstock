@@ -1,0 +1,18 @@
+#!/bin/bash
+ipcrm -M 0x000007d3
+ipcrm -M 0x000007d1
+ipcrm -M 0x000007d2
+killall manage_stock
+killall perl
+killall stock
+killall insert_data_sm
+sleep 1
+for jjj in `ps -ef | awk '/memory/{print $2}'`
+    do
+           echo " ID is jjj"
+        kill -9 $jjj > /dev/null 2>&1
+    done
+rm /home/joao/memory/*
+rm /home/joao/actions
+rm /home/joao/password
+cp /home/joao/rock_password /home/joao/password
