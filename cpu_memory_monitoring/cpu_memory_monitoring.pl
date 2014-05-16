@@ -77,7 +77,7 @@ my $dow;
 my $result;
 my $number_of_active_programs;
 my $wc;
-
+$number_of_active_programs = 10;
 
 while (1==1) {
 	if ($number_of_active_programs <= 100 ) { sleep 10; }
@@ -88,6 +88,7 @@ while (1==1) {
 	my $stat = $lxs->get;
 	my $t = new Proc::ProcessTable;
 	my $cpu  = $stat->cpustats->{cpu};
+	my $state;
 	my $memory_percentage = $stat->memstats->{memusedper};
 	$hardrive_command = `df -h | grep memory`;
 	($garbage ,$garbage, $garbage , $garbage , $hardrive) = split / +|	/, $hardrive_command;
@@ -98,18 +99,23 @@ while (1==1) {
 	print "Active programs: $number_of_active_programs \n";
 
 	
-	$rate_sec=($rate + 2000)/1000000;
+	#$rate_sec=($rate + 2000)/1000000;
 	if ($cpu->{total} < 70 && $memory_percentage < 99 && $hardrive < 90) {
 	# CPU and Memory in acceptable ranges, create and launch new program
 		$state =1 ;
+		print "got here6";
 		print "Active programs:$number_of_active_programs CPU:$cpu->{total} MEMORY:$memory_percentage  HARDRIVE:$hardrive \n ";
 	} else {
+		print "got here5";
 		print "Active programs:$number_of_active_programs CPU:$cpu->{total} MEMORY:$memory_percentage  HARDRIVE:$hardrive \n ";
+		print "got here0";
 		$state =0 ;
+		print "got here1";
 		sleep 1;
+		print "got here2";
 	}
 
-	
+	print "got here";
 	open FILE, "/home/joao/location.txt";
 	# read the record, and chomp off the newline
 	chomp(my $best_program = <FILE>);
@@ -231,6 +237,8 @@ while (1==1) {
 				print "nothing to clean\n";
 				$done = 1;
 			}
+		} else {
+			$done = 1;
 		}
 	}
 
