@@ -19,7 +19,7 @@ if ( ping(host => "www.google.com"))	{
    $qhist = Finance::QuoteHist->new
     (
       symbols    => [qw(FXE)],
-      start_date => '01/01/2008', # or 'one year ago', see Date::Manip
+      start_date => '01/01/2003', # or 'one year ago', see Date::Manip
       end_date   => 'today',
      );
       open FILE_history, ">/home/joao/stockvalue/stockvaluehistory.txt";

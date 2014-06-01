@@ -36,7 +36,7 @@ if ( ping(host => "www.google.com"))	{
 		$q->failover(1);
 		 my $conversion_rate = $q->currency("EUR","USD");
 		 open FILE, ">/home/joao/stockvalue/stockvalue.txt";
-		if ( $conversion_rate != "" ) {
+		if ( $conversion_rate != ""  && $conversion_rate > 1 && $conversion_rate < 2) {
 		 		print "current value $conversion_rate";
 		 print FILE $conversion_rate; 
 		 close FILE;
