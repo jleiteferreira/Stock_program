@@ -411,6 +411,14 @@ int main() {
                       myfile2 << i ; usleep(500000); myfile2.close();
 		    }
                }
+               else if (!command2.compare ("reset") )  {  
+                    stringstream ss(command3);
+		    if ((ss >> i ) && i > 0 && i < 10000) {
+                      LOG << time_stamp << "PROGRAM:" << i << " AT:" << dinheiro->posicao[i] << " Reset manually" << endl; 
+        	      actions->money[i]=average_money; actions->lock[i]=0; actions->stocks[i]=0; actions->truemoney[i]=average_money; separate_money[i]=average_money;
+        	      separate_stocks[i]=0;separate_truemoney[i]=average_money; heartbeat[i]=0; heartbeat_sixhours[i]=0; heartbeat_hour[i]=0;reported_dead[i]=0;activity[i]=0;
+		    }
+               }
                else if (!command2.compare ("quit")) { return 1;}
                else { cout << "Options\n exec live on\n exec live off\n #clear\n kill\n #quit\n";}
             }

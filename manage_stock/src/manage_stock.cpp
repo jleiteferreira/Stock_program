@@ -510,7 +510,7 @@ int main() {
              ofstream myfile2;
              myfile2.open ("/home/joao/tokill.txt", ios::app);
              LOG << time_stamp << "PROGRAM:" << i << " AT:" << dinheiro->posicao[i] << " Money does not match kill" << endl; 
-             myfile2 << i;
+             myfile2 << i << endl;
              myfile2.close();
             // Reset values of killed fellow
             actions->money[i]=average_money; actions->lock[i]=0; actions->stocks[i]=0; actions->truemoney[i]=average_money; separate_money[i]=average_money;
@@ -520,7 +520,7 @@ int main() {
              ofstream myfile2;
              myfile2.open ("/home/joao/tokill.txt", ios::app);
              LOG << time_stamp << "PROGRAM:" << i << " AT:" << dinheiro->posicao[i] << " True Money:" << actions->truemoney[i] << " Money:" << actions->money[i]   << " Money in game is too high kill" << endl; 
-             myfile2 << i;
+             myfile2 << i << endl;
              myfile2.close();
              // Reset values of killed fellow
             actions->money[i]=average_money; actions->lock[i]=0; actions->stocks[i]=0; actions->truemoney[i]=average_money; separate_money[i]=average_money;
@@ -531,7 +531,7 @@ int main() {
               myfile2.open ("/home/joao/tokill.txt", ios::app);
               LOG << "PROGRAM:" << i << " AT:" << dinheiro->posicao[i] << " to kill CHANGED HIS STOCKS IN MEMORY" << endl; 
               usleep(500000);
-              myfile2 << i;
+              myfile2 << i << endl;
               myfile2.close();
               // Reset values of killed fellow
               actions->money[i]=average_money; actions->lock[i]=0; actions->stocks[i]=0; actions->truemoney[i]=average_money; separate_money[i]=average_money;
